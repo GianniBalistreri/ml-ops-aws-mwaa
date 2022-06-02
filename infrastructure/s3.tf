@@ -1,7 +1,7 @@
 # S3 Bucket: Airflow (MWAA)
-resource "aws_s3_bucket" "s3_bucket" {
-  bucket        = var.prefix
-  count         = var.s3_create ? 1 : 0
+resource "aws_s3_bucket" "airflow" {
+  bucket        = var.s3_bucket_name_airflow_mwaa
+  #count         = var.s3_create ? 1 : 0
   tags          = var.s3_tags
   force_destroy = var.s3_force_destroy
   server_side_encryption_configuration {
@@ -20,7 +20,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 }
 
 resource "aws_s3_bucket_public_access_block" "s3_bucket_public_access_block" {
-  bucket                  = aws_s3_bucket.s3_bucket.id
+  bucket                  = aws_s3_bucket.airflow.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -29,7 +29,7 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket_public_access_block" {
 
 resource "aws_s3_bucket_object" "dags" {
   for_each = fileset("dags/", "*.py")
-  bucket   = aws_s3_bucket.s3_bucket.id
+  bucket   = aws_s3_bucket.airflow.id
   key      = "dags/${each.value}"
   source   = "dags/${each.value}"
   etag     = filemd5("dags/${each.value}")

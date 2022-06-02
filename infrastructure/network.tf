@@ -8,7 +8,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
 
   tags = merge(local.tags, {
-    Name = "${var.prefix}-vpc"
+    Name = "${var.mwaa_prefix}-vpc"
   })
 }
 
@@ -20,7 +20,7 @@ resource "aws_subnet" "public_subnets" {
   map_public_ip_on_launch = true
 
   tags = merge(local.tags, {
-    Name = format("${var.prefix}-public%02d", count.index + 1)
+    Name = format("${var.mwaa_prefix}-public%02d", count.index + 1)
   })
 }
 
@@ -32,7 +32,7 @@ resource "aws_subnet" "private_subnets" {
   map_public_ip_on_launch = false
 
   tags = merge(local.tags, {
-    Name = format("${var.prefix}-private%02d", count.index + 1)
+    Name = format("${var.mwaa_prefix}-private%02d", count.index + 1)
   })
 }
 
@@ -40,7 +40,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
 
   tags = merge(local.tags, {
-    Name = "${var.prefix}-ig"
+    Name = "${var.mwaa_prefix}-ig"
   })
 }
 
@@ -49,7 +49,7 @@ resource "aws_eip" "nat_gateway_elastic_ips" {
   vpc   = true
 
   tags = merge(local.tags, {
-    Name = format("${var.prefix}-eip%02d", count.index + 1)
+    Name = format("${var.mwaa_prefix}-eip%02d", count.index + 1)
   })
 
   depends_on = [aws_internet_gateway.internet_gateway]
@@ -61,7 +61,7 @@ resource "aws_nat_gateway" "nat_gateways" {
   subnet_id     = aws_subnet.public_subnets[count.index].id
 
   tags = merge(local.tags, {
-    Name = format("${var.prefix}-ngw%02d", count.index + 1)
+    Name = format("${var.mwaa_prefix}-ngw%02d", count.index + 1)
   })
 }
 
@@ -74,7 +74,7 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = merge(local.tags, {
-    Name = "${var.prefix}-public"
+    Name = "${var.mwaa_prefix}-public"
   })
 }
 
@@ -94,7 +94,7 @@ resource "aws_route_table" "private_route_tables" {
   }
 
   tags = merge(local.tags, {
-    Name = format("${var.prefix}-private%02d", count.index + 1)
+    Name = format("${var.mwaa_prefix}-private%02d", count.index + 1)
   })
 }
 
@@ -112,13 +112,13 @@ resource "aws_route_table_association" "private_route_table_associations" {
 #   vpc_id      = aws_vpc.vpc.id
 
 #   tags = {
-#     Name = "${var.prefix}-no-ingress"
+#     Name = "${var.mwaa_prefix}-no-ingress"
 #   }
 # }
 
 resource "aws_security_group" "mwaa" {
-  name        = "airflow-security-group-${var.prefix}"
-  description = "Security Group for Amazon MWAA Environment ${var.prefix}"
+  name        = "airflow-security-group-${var.mwaa_prefix}"
+  description = "Security Group for Amazon MWAA Environment ${var.mwaa_prefix}"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
@@ -136,6 +136,6 @@ resource "aws_security_group" "mwaa" {
   }
 
   tags = merge(local.tags, {
-    Name = "airflow-security-group-${var.prefix}"
+    Name = "airflow-security-group-${var.mwaa_prefix}"
   })
 }

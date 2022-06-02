@@ -1,7 +1,17 @@
+#########
+# Misc #
+########
+
 variable "region" {
   type        = string
   description = "AWS region where resources will be deployed."
   default     = "eu-central-1"
+}
+
+variable "env" {
+  description = "Staging environment (dev, stage, prod)"
+  type        = string
+  default     = "dev"
 }
 
 ############
@@ -48,15 +58,21 @@ variable "ecr_scan_on_push" {
 # AWS MWAA #
 ############
 
-variable "vpc_cidr" {
+variable "mwaa_prefix" {
+  description = "Managed Airflow (MWAA) prefix for IAM Role"
   type        = string
-  description = "VPC CIDR block."
+  default     = "airflow-mwaa"
+}
+
+variable "vpc_cidr" {
+  description = "VPC CIDR block"
+  type        = string
   default     = "10.192.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
+  description = "Public subnets' CIDR blocks"
   type        = list(string)
-  description = "Public subnets' CIDR blocks."
   default = [
     "10.192.10.0/24",
     "10.192.11.0/24"
@@ -64,8 +80,8 @@ variable "public_subnet_cidrs" {
 }
 
 variable "private_subnet_cidrs" {
+  description = "Private subnets' CIDR blocks"
   type        = list(string)
-  description = "Private subnets' CIDR blocks."
   default = [
     "10.192.20.0/24",
     "10.192.21.0/24"
@@ -73,8 +89,8 @@ variable "private_subnet_cidrs" {
 }
 
 variable "mwaa_max_workers" {
+  description = "Maximum number of MWAA workers"
   type        = number
-  description = "Maximum number of MWAA workers."
   default     = 2
 }
 
@@ -83,8 +99,8 @@ variable "mwaa_max_workers" {
 ##########
 
 variable "s3_bucket_name_airflow_mwaa" {
-  type        = string
   description = "Name of the airflow (MWAA) backend folder"
+  type        = string
   default     = "gfb-ml-ops-airflow-mwaa"
 }
 
@@ -110,6 +126,12 @@ variable "s3_bucket_name_model" {
   description = "Name of the bucket for output model artefact"
   type        = string
   default     = "gfb-ml-ops-model"
+}
+
+variable "s3_create" {
+  description = "Whether to create this resource or not"
+  type        = bool
+  default     = true
 }
 
 variable "s3_key" {

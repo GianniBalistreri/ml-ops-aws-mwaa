@@ -1,5 +1,5 @@
 resource "aws_iam_role" "iam_role" {
-  name = var.prefix
+  name = var.mwaa_prefix
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -18,7 +18,7 @@ resource "aws_iam_role" "iam_role" {
   })
 
   tags = merge(local.tags, {
-    Name = var.prefix
+    Name = var.mwaa_prefix
   })
 }
 
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "iam_policy_document" {
     sid       = ""
     actions   = ["airflow:PublishMetrics"]
     effect    = "Allow"
-    resources = ["arn:aws:airflow:${var.region}:${local.account_id}:environment/${var.prefix}"]
+    resources = ["arn:aws:airflow:${var.region}:${local.account_id}:environment/${var.mwaa_prefix}"]
   }
 
   statement {
@@ -35,8 +35,8 @@ data "aws_iam_policy_document" "iam_policy_document" {
     actions = ["s3:ListAllMyBuckets"]
     effect  = "Allow"
     resources = [
-      aws_s3_bucket.s3_bucket.arn,
-      "${aws_s3_bucket.s3_bucket.arn}/*"
+      aws_s3_bucket.airflow.arn,
+      "${aws_s3_bucket.airflow.arn}/*"
     ]
   }
 
@@ -49,8 +49,8 @@ data "aws_iam_policy_document" "iam_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      aws_s3_bucket.s3_bucket.arn,
-      "${aws_s3_bucket.s3_bucket.arn}/*"
+      aws_s3_bucket.airflow.arn,
+      "${aws_s3_bucket.airflow.arn}/*"
     ]
   }
 
@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "iam_policy_document" {
       "logs:DescribeLogGroups"
     ]
     effect    = "Allow"
-    resources = ["arn:aws:logs:${var.region}:${local.account_id}:log-group:airflow-${var.prefix}*"]
+    resources = ["arn:aws:logs:${var.region}:${local.account_id}:log-group:airflow-${var.mwaa_prefix}*"]
   }
 
   statement {
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "iam_policy_document" {
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name   = var.prefix
+  name   = var.mwaa_prefix
   path   = "/"
   policy = data.aws_iam_policy_document.iam_policy_document.json
 }

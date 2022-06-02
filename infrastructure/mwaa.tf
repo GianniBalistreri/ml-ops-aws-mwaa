@@ -1,9 +1,9 @@
 # Managed Airflow:
 resource "aws_mwaa_environment" "mwaa_environment" {
-  source_bucket_arn     = aws_s3_bucket.s3_bucket.arn
+  source_bucket_arn     = aws_s3_bucket.airflow.arn
   dag_s3_path           = "dags"
   execution_role_arn    = aws_iam_role.iam_role.arn
-  name                  = var.prefix
+  name                  = var.mwaa_prefix
   max_workers           = var.mwaa_max_workers
   webserver_access_mode = "PUBLIC_ONLY"
 
